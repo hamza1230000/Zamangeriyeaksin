@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ZamangeriyeAksin - Çark</title>
+<style>
+  body {
+    background: #121212;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  h1 {
+    margin-bottom: 20px;
+  }
+  #wheel {
+    margin: 20px auto;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 8px solid #444;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px #0ff;
+  }
+  #spin-btn {
+    margin-top: 30px;
+    padding: 15px 30px;
+    font-size: 18px;
+    background: #0ff;
+    color: #121212;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0ff;
+  }
+  #result {
+    margin-top: 30px;
+    font-size: 22px;
+    min-height: 30px;
+    font-weight: bold;
+  }
+
+  /* Wheel segments */
+  .segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0% 0%;
+    overflow: hidden;
+  }
+  .segment span {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    border-radius: 50%;
+    text-align: right;
+    padding-right: 10px;
+    box-sizing: border-box;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 40px;
+  }
+  /* Colors for segments */
+  .segment:nth-child(1) span { background: #1abc9c; }
+  .segment:nth-child(2) span { background: #3498db; }
+  .segment:nth-child(3) span { background: #9b59b6; }
+  .segment:nth-child(4) span { background: #e67e22; }
+  .segment:nth-child(5) span { background: #e74c3c; }
+  .segment:nth-child(6) span { background: #34495e; }
+
+  /* Pointer */
+  #pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; 
+    height: 0; 
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #0ff;
+    filter: drop-shadow(0 0 5px #0ff);
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<h1>🎡 Ne İzleyelim / Okuyalım? Çarkı Döndür!</h1>
+
+<div id="wheel-container" style="position: relative; width: 300px; height: 300px;">
+  <div id="pointer"></div>
+  <div id="wheel">
+    <div class="segment" style="transform: rotate(0deg)"><span>Film</span></div>
+    <div class="segment" style="transform: rotate(60deg)"><span>Dizi</span></div>
+    <div class="segment" style="transform: rotate(120deg)"><span>Çizgi Film</span></div>
+    <div class="segment" style="transform: rotate(180deg)"><span>Çizgi Dizi</span></div>
+    <div class="segment" style="transform: rotate(240deg)"><span>Kitap</span></div>
+    <div class="segment" style="transform: rotate(300deg)"><span>Şiir</span></div>
+  </div>
+</div>
+
+<button id="spin-btn">Çarkı Döndür!</button>
+
+<div id="result"></div>
+
+<script>
+  const wheel = document.getElementById('wheel');
+  const btn = document.getElementById('spin-btn');
+  const result = document.getElementById('result');
+
+  const segments = ['Film', 'Dizi', 'Çizgi Film', 'Çizgi Dizi', 'Kitap', 'Şiir'];
+  const segmentDegree = 360 / segments.length;
+  let rotation = 0;
+  let spinning = false;
+
+  btn.addEventListener('click', () => {
+    if(spinning) return;
+    spinning = true;
+    result.textContent = '';
+
+    // Random spin between 3 and 6 full rotations plus random offset
+    const spins = Math.floor(Math.random() * 3) + 3;
+    const randomDegree = Math.floor(Math.random() * 360);
+    const totalDegree = spins * 360 + randomDegree;
+
+    rotation = (rotation + totalDegree) % 360;
+    wheel.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
+    wheel.style.transform = `rotate(${rotation}deg)`;
+
+    setTimeout(() => {
+      spinning = false;
+      // Determine which segment is landed on
+      const index = Math.floor(((360 - (rotation % 360)) % 360) / segmentDegree);
+      const chosen = segments[index];
+      result.textContent = `Seçtin: ${chosen}! 🎉`;
+    }, 4100);
+  });
+</script>
+
+</body>
+</html>
